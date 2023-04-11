@@ -22,7 +22,7 @@
                     <span class="text-center p-3">Açıklama</span>
                     <span class="text-center p-3"></span>
                 </div>
-                <form class="grid grid-cols-5 w-full items-center" action="islemEkleKayit.php">
+                <form class="grid grid-cols-5 w-full items-center" action="add.php">
                     <span class="text-center p-3">
                         <select name="tur" class="<?php echo $inputStyle ?>" required>
                             <option value="">Lütfen türünü seçiniz.</option>
@@ -75,13 +75,13 @@
                 
                 <div class="flex flex-col max-h-96 overflow-auto">
                     <?php
-                        include "cekirdek.php";
-                        $baglanti = baglanVeritabani();
-                        $kayitlar = getirMuhasebeKayitlar();
+                        include "system.php";
+                        $baglanti = connectDB();
+                        $kayitlar = getAccountingRecordsRecords();
 
                         foreach ($kayitlar as $kayit){
                             $bagGüncelle = "formGuncelleKayit.php?id=".$kayit["id"].",miktar=".$kayit["miktar"].",tarih=".$kayit["tarih"].",aciklama=".$kayit["aciklama"];
-                            $bagSil = "islemSilKayit.php?id=".$kayit["id"];
+                            $bagSil = "delete.php?id=".$kayit["id"];
                             $satir = '';
                             $satir .= '<div class="grid grid-cols-5 w-full items-center">';
                             $satir .= '<span class="text-center p-3">'.$kayit['tur'].'</span>';       
@@ -100,7 +100,7 @@
                             $modal = 
                             '<div id="'.$kayit['id'].'-edit-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                                 <div class="relative w-fit">
-                                    <form class="relative bg-white rounded-lg shadow dark:bg-gray-700" action="islemGuncelleKayit.php"> 
+                                    <form class="relative bg-white rounded-lg shadow dark:bg-gray-700" action="update.php"> 
                                         <div>
                                             <div class="grid grid-cols-4 w-full items-center border-b border-blue-600 border-opacity-40">
                                             <span class="text-center p-3">Tür</span>
@@ -111,7 +111,16 @@
                                             <div class="grid grid-cols-4 w-full flex items-center py-4">
                                                 <input name="id" value="'.$kayit['id'].'" type="text" class="hidden" required>
                                                 <span class="text-center p-3">
-                                                    <input name="tur" value="'.$kayit['tur'].'" type="text" class="'.$inputStyle.'" required>
+                                                    <select name="tur" class="'.$inputStyle.'" required>';
+                                                        if ($kayit['tur'] == "gelir"){
+                                                            $modal .= '<option value="gelir" selected>Gelir</option>';
+                                                            $modal .= '<option value="gider">Gider</option>';
+                                                        } else if ($kayit['tur'] == "gider") {
+                                                            $modal .= '<option value="gelir">Gelir</option>';
+                                                            $modal .= '<option value="gider" selected>Gider</option>';
+                                                        }
+                                                        $modal .= '
+                                                    </select>
                                                 </span>
                                                 <span class="text-center p-3">
                                                     <input name="miktar" value="'.$kayit['miktar'].'" type="number" class="'.$inputStyle.'" required>
@@ -160,3 +169,4 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
 </html>
+
